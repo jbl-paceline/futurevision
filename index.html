@@ -3,72 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paceline Life | Future Vision</title>
+    <title>Paceline Future Vision</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/lucide-react"></script>
+    <script src="https://unpkg.com/lucide-react@latest"></script>
 
     <style>
-        /* Custom scrollbar for a sleeker look */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #020202; }
-        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
-        
-        /* Fix for range slider appearance in dark mode */
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 18px;
-            width: 18px;
-            border-radius: 50%;
-            background: #10b981;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        input[type="range"] { -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; }
+        input[type="range"]::-webkit-slider-runnable-track { background: #27272a; border-radius: 0.5rem; height: 0.5rem; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; margin-top: -4px; background-color: #10b981; border-radius: 0.5rem; height: 1rem; width: 1rem; }
     </style>
 </head>
 <body class="bg-[#020202]">
     <div id="root"></div>
 
     <script type="text/babel">
-        // Destructure Hooks and Icons
-        const { useState, useMemo, useEffect } = React;
+        // FIX: Extract icons from the LucideReact global object provided by the CDN
         const { 
-            Activity, Heart, Dumbbell, Shield, Trophy, Zap, 
-            ChevronRight, ArrowUpRight, Bell, User, Info, 
-            CreditCard, Target, Sparkles, Flame, Timer, 
-            Play, Settings, RefreshCw, Watch, CheckCircle2, 
-            Lock, FileText 
+          Activity, Heart, Dumbbell, Shield, Trophy, Zap, 
+          ChevronRight, ArrowUpRight, Bell, User, Info, 
+          CreditCard, Target, Sparkles, Flame, Timer, 
+          Play, Settings, RefreshCw, Watch, CheckCircle2, 
+          Lock, FileText 
         } = LucideReact;
+
+        const { useState, useMemo } = React;
 
         const App = () => {
           const [activeTab, setActiveTab] = useState('home');
           const [isRefreshing, setIsRefreshing] = useState(false);
-          
-          // Application State: 'none', 'applying', 'reviewing', 'issued'
           const [appStep, setAppStep] = useState('none');
           const [coverageAmount, setCoverageAmount] = useState(500000);
 
-          // User Input State for Simulation
           const [simData, setSimData] = useState({
-            z2: 164,
-            z4: 28,
-            z5: 12,
-            strength: 1,
-            score: 74
+            z2: 164, z4: 28, z5: 12, strength: 1, score: 74
           });
 
-          // Calculated state based on user inputs
           const userData = useMemo(() => {
             const totalCardio = simData.z2 + simData.z4 + simData.z5;
-            const cardioTarget = 260;
             const z4Deficit = Math.max(0, 45 - simData.z4);
-            
             const baseRatePerMillion = 60; 
             const scoreMultiplier = (100 - simData.score) / 100;
             const monthlyPremium = (coverageAmount / 1000000) * baseRatePerMillion * scoreMultiplier + 15;
@@ -77,22 +59,17 @@
               score: simData.score,
               scoreDelta: 3,
               cardio: totalCardio,
-              cardioTarget: cardioTarget,
-              strength: simData.strength,
-              strengthTarget: 2,
               miles: 12440 + (totalCardio * 2),
-              tier: 'Gold',
               z4Deficit,
               insurance: {
                 coverage: coverageAmount,
                 premium: monthlyPremium,
-                savings: (simData.score / 100) * 25.50,
-                mortalityShift: -18.4 - (simData.strength * 2)
+                savings: (simData.score / 100) * 25.50
               },
               zones: [
-                { id: 2, name: 'Zone 2', minutes: simData.z2, target: 200, color: 'bg-emerald-500', desc: 'Aerobic Base (60-70% Max)', status: simData.z2 >= 150 ? 'On Track' : 'Low' },
-                { id: 4, name: 'Zone 4', minutes: simData.z4, target: 45, color: 'bg-orange-500', desc: 'Threshold (80-90% Max)', status: z4Deficit > 0 ? `Need ${z4Deficit}m` : 'Optimal' },
-                { id: 5, name: 'Zone 5', minutes: simData.z5, target: 15, color: 'bg-rose-500', desc: 'Peak Effort (90-100% Max)', status: 'Optimal' }
+                { id: 2, name: 'Zone 2', minutes: simData.z2, color: 'bg-emerald-500' },
+                { id: 4, name: 'Zone 4', minutes: simData.z4, color: 'bg-orange-500' },
+                { id: 5, name: 'Zone 5', minutes: simData.z5, color: 'bg-rose-500' }
               ]
             };
           }, [simData, coverageAmount]);
@@ -113,251 +90,88 @@
                     <span className="text-xl font-bold tracking-tighter italic uppercase text-white">Paceline</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <button className="relative p-2 text-zinc-400 hover:text-white transition-colors">
-                      <Bell size={20} />
-                      <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-500 border-2 border-black" />
-                    </button>
-                    <div className="h-9 w-9 rounded-full border border-zinc-700 bg-zinc-900 flex items-center justify-center text-zinc-400 hover:border-emerald-500/50 transition-all cursor-pointer">
-                      <User size={18} />
-                    </div>
+                    <Bell size={20} className="text-zinc-400" />
+                    <div className="h-9 w-9 rounded-full border border-zinc-700 bg-zinc-900 flex items-center justify-center"><User size={18} /></div>
                   </div>
                 </div>
               </header>
 
               <main className="max-w-xl mx-auto px-6 pt-6 pb-32">
                 {activeTab === 'home' && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="space-y-6">
                     <div className="relative flex flex-col items-center justify-center py-10 bg-zinc-900/20 rounded-[2.5rem] border border-zinc-800/50 overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
                       <div className="relative h-48 w-48 mb-6">
                         <svg className="h-full w-full -rotate-90">
-                          <circle cx="96" cy="96" r="84" fill="transparent" stroke="currentColor" strokeWidth="10" className="text-zinc-800" />
-                          <circle cx="96" cy="96" r="84" fill="transparent" stroke="url(#pacelineGradient)" strokeWidth="10" strokeDasharray={527} strokeDashoffset={527 * (1 - userData.score / 100)} strokeLinecap="round" className="transition-all duration-1000 ease-in-out" />
-                          <defs>
-                            <linearGradient id="pacelineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="#10b981" />
-                              <stop offset="100%" stopColor="#06b6d4" />
-                            </linearGradient>
-                          </defs>
+                          <circle cx="96" cy="96" r="84" fill="transparent" stroke="#27272a" strokeWidth="10" />
+                          <circle cx="96" cy="96" r="84" fill="transparent" stroke="#10b981" strokeWidth="10" strokeDasharray={527} strokeDashoffset={527 * (1 - userData.score / 100)} strokeLinecap="round" className="transition-all duration-1000" />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-6xl font-black tracking-tighter text-white">{userData.score}</span>
-                          <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Longevity Score</span>
+                          <span className="text-6xl font-black text-white">{userData.score}</span>
+                          <span className="text-[10px] uppercase font-bold text-zinc-500">Longevity Score</span>
                         </div>
-                      </div>
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-                        <ArrowUpRight size={14} /> +{userData.scoreDelta} pts this month
                       </div>
                     </div>
 
-                    {userData.z4Deficit > 0 ? (
-                      <div className="group relative p-6 rounded-3xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 transition-all cursor-pointer overflow-hidden">
-                        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                          <Flame size={100} />
-                        </div>
+                    {userData.z4Deficit > 0 && (
+                      <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800">
                         <div className="flex items-center gap-2 mb-3 text-orange-400">
                           <Zap size={16} fill="currentColor" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">Next Best Action</span>
+                          <span className="text-[10px] font-bold uppercase">Next Best Action</span>
                         </div>
                         <h3 className="text-xl font-bold mb-2">Complete Zone 4 Protocol</h3>
-                        <p className="text-sm text-zinc-400 mb-6 max-w-[85%] leading-relaxed">
-                          You're missing {userData.z4Deficit} minutes of threshold work. High-intensity Z4 sessions increase mitochondrial efficiency.
-                        </p>
-                        <button className="w-full flex items-center justify-between px-5 py-4 bg-emerald-500 text-black text-sm font-black rounded-2xl hover:bg-emerald-400 transition-all shadow-xl shadow-emerald-500/10 active:scale-[0.98]">
-                          <div className="flex items-center gap-3">
-                            <Play size={18} fill="currentColor" />
-                            START INTERVAL SESSION
-                          </div>
-                          <ChevronRight size={18} strokeWidth={3} />
+                        <button className="w-full mt-4 flex items-center justify-between px-5 py-4 bg-emerald-500 text-black font-black rounded-2xl">
+                          <div className="flex items-center gap-3"><Play size={18} fill="currentColor" /> START SESSION</div>
+                          <ChevronRight size={18} />
                         </button>
                       </div>
-                    ) : (
-                      <div className="group relative p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 overflow-hidden">
-                        <div className="flex items-center gap-2 mb-3 text-emerald-400">
-                          <Trophy size={16} fill="currentColor" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest text-white">Status: Elite</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Weekly Protocol Complete</h3>
-                        <p className="text-sm text-zinc-400">You've hit all polarized targets. Your mortality risk reduction is currently optimized.</p>
-                      </div>
                     )}
-
-                    <div className="p-6 rounded-3xl bg-zinc-900/50 border border-zinc-800 space-y-4">
-                      <h4 className="text-[10px] uppercase font-bold tracking-widest text-zinc-500">Weekly Distribution</h4>
-                      <div className="h-2 w-full bg-zinc-800 rounded-full overflow-hidden flex">
-                         {userData.zones.map((zone) => (
-                           <div key={zone.id} className={`${zone.color} h-full transition-all duration-1000`} style={{ width: `${(zone.minutes / userData.cardio) * 100}%` }} />
-                         ))}
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        {userData.zones.map(z => (
-                          <div key={z.id} className="text-center">
-                            <div className="text-[10px] font-bold text-zinc-500 uppercase">{z.name}</div>
-                            <div className="text-xs font-bold">{z.minutes}m</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 )}
 
                 {activeTab === 'life' && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                  <div className="space-y-6">
                     {appStep === 'none' && (
-                      <div className="space-y-6">
-                        <header className="space-y-2">
-                          <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Life+ Membership</h2>
-                          <p className="text-sm text-zinc-500 leading-relaxed">The first life insurance policy underwritten by your actual effort, not your medical records.</p>
-                        </header>
-
-                        <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/30 relative overflow-hidden group">
-                          <div className="absolute top-0 right-0 p-8 opacity-10">
-                            <CheckCircle2 size={100} />
-                          </div>
-                          <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-4 text-emerald-400">
-                              <Sparkles size={16} fill="currentColor" />
-                              <span className="text-[10px] font-bold uppercase tracking-widest">Pre-Approved Offer</span>
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">You're in the Elite Tier.</h3>
-                            <p className="text-sm text-zinc-400 mb-8 max-w-[80%] leading-relaxed">
-                              Your Longevity Score of <span className="text-white font-bold">{userData.score}</span> puts you in the top 10% of health profiles. You qualify for instant coverage up to $5,000,000.
-                            </p>
-                            <button onClick={() => setAppStep('applying')} className="w-full py-4 bg-emerald-500 text-black font-black uppercase rounded-2xl hover:bg-emerald-400 transition-all flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20">
-                              Instant Application <ChevronRight size={18} strokeWidth={3} />
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <FeatureItem icon={Activity} label="Wearable Underwriting" desc="No doctors, no blood." />
-                          <FeatureItem icon={Target} label="Dynamic Premiums" desc="Move more, pay less." />
-                        </div>
+                      <div className="p-8 rounded-[2.5rem] bg-zinc-900 border border-emerald-500/30">
+                        <h3 className="text-2xl font-bold text-white mb-4">Elite Tier Pre-Approval</h3>
+                        <button onClick={() => setAppStep('applying')} className="w-full py-4 bg-emerald-500 text-black font-black uppercase rounded-2xl">
+                          Apply Now
+                        </button>
                       </div>
                     )}
-
                     {appStep === 'applying' && (
-                      <div className="space-y-8 animate-in slide-in-from-right-4 duration-500">
-                        <button onClick={() => setAppStep('none')} className="text-zinc-500 hover:text-white text-xs font-bold flex items-center gap-1">
-                            Back to Overview
-                        </button>
-                        <header>
-                          <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-1">Select Coverage</h2>
-                          <p className="text-sm text-zinc-500 italic">Adjust your face amount based on your FICO-Health rating.</p>
-                        </header>
-
-                        <div className="p-8 rounded-[2.5rem] bg-zinc-900 border border-zinc-800 space-y-10">
-                          <div className="text-center space-y-2">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Face Amount</span>
-                            <h3 className="text-5xl font-black text-white tracking-tighter italic">
-                              {coverageAmount >= 1000000 
-                                ? `$${(coverageAmount / 1000000).toFixed(2)}M` 
-                                : `$${(coverageAmount / 1000).toLocaleString()}K`}
-                            </h3>
-                          </div>
-
-                          <div className="space-y-6">
-                            <input type="range" min="25000" max="5000000" step="25000" value={coverageAmount} onChange={(e) => setCoverageAmount(parseInt(e.target.value))} className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
-                            <div className="flex justify-between text-[10px] font-black text-zinc-600 tracking-widest uppercase">
-                              <span>$25,000</span>
-                              <span>$5,000,000</span>
-                            </div>
-                          </div>
-
-                          <div className="pt-6 border-t border-zinc-800 flex justify-between items-center">
-                            <div>
-                              <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Estimated Monthly</span>
-                              <div className="text-2xl font-black text-white italic">${userData.insurance.premium.toFixed(2)}</div>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Activity Savings Applied</span>
-                              <div className="text-sm font-bold text-zinc-300">-${userData.insurance.savings.toFixed(2)}/mo</div>
-                            </div>
-                          </div>
+                      <div className="p-8 rounded-[2.5rem] bg-zinc-900 border border-zinc-800 space-y-8">
+                        <div className="text-center">
+                          <span className="text-[10px] font-bold text-zinc-500 uppercase">Face Amount</span>
+                          <h3 className="text-5xl font-black text-white italic">${(coverageAmount/1000).toLocaleString()}K</h3>
                         </div>
-
-                        <button onClick={() => setAppStep('reviewing')} className="w-full py-5 bg-emerald-500 text-black font-black uppercase rounded-2xl shadow-2xl shadow-emerald-500/20 flex items-center justify-center gap-2 active:scale-95 transition-all">
-                          Review & Sign <ChevronRight size={18} strokeWidth={3} />
-                        </button>
+                        <input type="range" min="25000" max="5000000" step="25000" value={coverageAmount} onChange={(e) => setCoverageAmount(parseInt(e.target.value))} className="w-full" />
+                        <button onClick={() => setAppStep('issued')} className="w-full py-4 bg-white text-black font-black rounded-2xl">Confirm Policy</button>
                       </div>
                     )}
-
-                    {appStep === 'reviewing' && (
-                      <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                        <button onClick={() => setAppStep('applying')} className="text-zinc-500 hover:text-white text-xs font-bold flex items-center gap-1">Back</button>
-                        <header>
-                          <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-1">One Last Look</h2>
-                          <p className="text-sm text-zinc-500 italic">Policy issuing via Paceline Reinsurance Lab.</p>
-                        </header>
-                        <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-4">
-                           <SummaryRow label="Policy Holder" value="Paceline Member #4241" />
-                           <SummaryRow label="Coverage Amount" value={`$${coverageAmount.toLocaleString()}`} />
-                           <SummaryRow label="Monthly Premium" value={`$${userData.insurance.premium.toFixed(2)}`} />
-                           <SummaryRow label="Underwriting Data" value="Garmin Health API" />
-                        </div>
-                        <button onClick={() => setAppStep('issued')} className="w-full py-5 bg-white text-black font-black uppercase rounded-2xl flex items-center justify-center gap-2 active:scale-95 transition-all">
-                          Confirm Policy <Sparkles size={18} fill="currentColor" />
-                        </button>
-                      </div>
-                    )}
-
                     {appStep === 'issued' && (
-                      <div className="space-y-8 animate-in zoom-in-95 duration-700 text-center py-10">
-                        <div className="relative mx-auto w-24 h-24 mb-6">
-                          <div className="absolute inset-0 bg-emerald-500 blur-2xl opacity-20 animate-pulse" />
-                          <div className="relative z-10 w-24 h-24 rounded-full bg-emerald-500 flex items-center justify-center text-black">
-                            <CheckCircle2 size={48} strokeWidth={3} />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <h2 className="text-4xl font-black italic uppercase text-white">Policy Issued.</h2>
-                          <p className="text-zinc-500 text-sm max-w-xs mx-auto">Your coverage is active.</p>
-                        </div>
-                        <button onClick={() => {setAppStep('none'); setActiveTab('home');}} className="text-emerald-500 text-xs font-black uppercase tracking-[0.2em] border-b-2 border-emerald-500/20 pb-1">
-                          Return to Dashboard
-                        </button>
-                      </div>
+                       <div className="text-center py-10 space-y-4">
+                          <CheckCircle2 size={64} className="text-emerald-500 mx-auto" />
+                          <h2 className="text-3xl font-black text-white">Policy Issued</h2>
+                          <button onClick={() => setAppStep('none')} className="text-emerald-500 font-bold uppercase text-xs">Manage Policy</button>
+                       </div>
                     )}
-                  </div>
-                )}
-
-                {activeTab === 'rewards' && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                    <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-zinc-800 to-black border border-zinc-700 overflow-hidden relative group">
-                      <div className="relative z-10">
-                        <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-1">Health Miles Balance</div>
-                        <div className="text-5xl font-black text-white tracking-tighter mb-4">{userData.miles.toLocaleString()}</div>
-                        <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500" style={{ width: '75%' }} />
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 )}
 
                 {activeTab === 'settings' && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 py-4">
-                    <header className="space-y-1">
-                      <h2 className="text-2xl font-black italic uppercase text-white">Simulation Hub</h2>
-                    </header>
-                    <div className="space-y-8 p-6 rounded-3xl bg-zinc-900 border border-zinc-800">
-                      <InputGroup label="Zone 2 (Aerobic) Minutes" value={simData.z2} onChange={(v) => setSimData({...simData, z2: parseInt(v) || 0})} max={400} />
-                      <InputGroup label="Zone 4 (Threshold) Minutes" value={simData.z4} onChange={(v) => setSimData({...simData, z4: parseInt(v) || 0})} max={60} />
-                      <InputGroup label="Strength Sessions" value={simData.strength} onChange={(v) => setSimData({...simData, strength: parseInt(v) || 0})} max={7} />
-                      <InputGroup label="Longevity Score Override" value={simData.score} onChange={(v) => setSimData({...simData, score: parseInt(v) || 0})} max={100} />
-                      <button onClick={() => { handleRefresh(); setActiveTab('home'); }} className="w-full flex items-center justify-center gap-2 py-4 bg-emerald-500 text-black font-black uppercase rounded-2xl hover:bg-emerald-400 transition-all">
-                        <RefreshCw size={18} className={isRefreshing ? 'animate-spin' : ''} /> Sync & Update
-                      </button>
-                    </div>
+                  <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-6">
+                    <h2 className="text-xl font-black text-white">Simulation</h2>
+                    <InputGroup label="Zone 2 Minutes" value={simData.z2} onChange={(v) => setSimData({...simData, z2: parseInt(v)})} max={400} />
+                    <InputGroup label="Zone 4 Minutes" value={simData.z4} onChange={(v) => setSimData({...simData, z4: parseInt(v)})} max={100} />
+                    <InputGroup label="Longevity Score" value={simData.score} onChange={(v) => setSimData({...simData, score: parseInt(v)})} max={100} />
                   </div>
                 )}
               </main>
 
-              <nav className="fixed bottom-0 left-0 right-0 z-50 px-6 py-6 pb-10 flex justify-center pointer-events-none">
-                <div className="flex h-16 items-center justify-around gap-1 px-3 bg-zinc-900/80 backdrop-blur-2xl border border-zinc-800 rounded-[2rem] w-full max-w-sm pointer-events-auto shadow-2xl">
+              <nav className="fixed bottom-0 left-0 right-0 z-50 px-6 py-6 flex justify-center pointer-events-none">
+                <div className="flex h-16 items-center justify-around bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 rounded-[2rem] w-full max-w-sm pointer-events-auto">
                   <NavItem icon={Activity} label="Dash" active={activeTab === 'home'} onClick={() => setActiveTab('home')} />
                   <NavItem icon={Shield} label="Life+" active={activeTab === 'life'} onClick={() => setActiveTab('life')} />
-                  <NavItem icon={Trophy} label="Perks" active={activeTab === 'rewards'} onClick={() => setActiveTab('rewards')} />
                   <NavItem icon={Settings} label="Sync" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
                 </div>
               </nav>
@@ -365,37 +179,17 @@
           );
         };
 
-        const FeatureItem = ({ icon: Icon, label, desc }) => (
-          <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800">
-            <div className="h-8 w-8 rounded-lg bg-zinc-800 flex items-center justify-center text-emerald-500 mb-3">
-              <Icon size={18} />
-            </div>
-            <h4 className="text-xs font-bold text-white mb-1 uppercase tracking-tight">{label}</h4>
-            <p className="text-[10px] text-zinc-500 leading-snug">{desc}</p>
-          </div>
-        );
-
-        const SummaryRow = ({ label, value }) => (
-          <div className="flex justify-between items-center py-1">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{label}</span>
-            <span className="text-sm font-bold text-white italic">{value}</span>
-          </div>
-        );
-
         const InputGroup = ({ label, value, onChange, max }) => (
           <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-bold text-zinc-400">{label}</label>
-              <span className="text-xs font-black text-white">{value}</span>
-            </div>
-            <input type="range" min="0" max={max} value={value} onChange={(e) => onChange(e.target.value)} className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
+            <div className="flex justify-between text-xs font-bold text-zinc-400"><span>{label}</span><span>{value}</span></div>
+            <input type="range" min="0" max={max} value={value} onChange={(e) => onChange(e.target.value)} className="w-full" />
           </div>
         );
 
         const NavItem = ({ icon: Icon, label, active, onClick }) => (
-          <button onClick={onClick} className={`flex flex-1 flex-col items-center justify-center gap-1 h-12 rounded-2xl transition-all ${active ? 'text-emerald-500' : 'text-zinc-500 hover:text-zinc-300'}`}>
-            <Icon size={20} strokeWidth={active ? 2.5 : 2} />
-            <span className="text-[8px] font-bold uppercase tracking-widest">{label}</span>
+          <button onClick={onClick} className={`flex flex-1 flex-col items-center gap-1 ${active ? 'text-emerald-500' : 'text-zinc-500'}`}>
+            <Icon size={20} />
+            <span className="text-[8px] font-bold uppercase">{label}</span>
           </button>
         );
 
